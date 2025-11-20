@@ -1,0 +1,186 @@
+/* ========================================
+   UI Components Stylesheet
+   Tool panels, help overlay, and enhanced UI
+   ======================================== */
+
+/* Help Overlay */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+}
+
+.overlay.active {
+    display: flex;
+}
+
+.help-panel {
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.help-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.help-header h2 {
+    margin: 0;
+    color: #ffffff;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: #b0b0b0;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.help-content {
+    padding: 32px;
+}
+
+.help-content section {
+    margin-bottom: 32px;
+}
+
+.help-content h3 {
+    color: #00ff88;
+    margin-bottom: 20px;
+    font-size: 1.125rem;
+}
+
+.help-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.help-content li {
+    padding: 8px 0;
+    color: #b0b0b0;
+    line-height: 1.6;
+}
+
+.help-content strong {
+    color: #ffffff;
+}
+
+/* Enhanced Tool Panel */
+.tool-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    width: 100%;
+    text-align: left;
+}
+
+.tool-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #00ff88;
+    transform: translateX(4px);
+}
+
+.tool-button.active {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: #00ff88;
+}
+
+.tool-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.tool-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.tool-separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 12px 0;
+}
+
+.utility-button {
+    justify-content: center;
+    padding: 12px;
+}
+
+.utility-button .tool-label {
+    display: none;
+}
+
+#tool-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Mode Indicator Enhancements */
+.mode-icon {
+    font-size: 1.25rem;
+}
+
+.mode-text {
+    font-weight: 600;
+}
+
+/* Button States */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+button:disabled:hover {
+    transform: none;
+}
+
+/* Scrollbar Styling */
+.help-panel::-webkit-scrollbar {
+    width: 8px;
+}
+
+.help-panel::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.help-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+.help-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
