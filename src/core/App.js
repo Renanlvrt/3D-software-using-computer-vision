@@ -223,54 +223,6 @@ export class HandCraft3DApp {
         }
     }
 
-    processHandData() {
-        if (!this.leftHand && !this.rightHand) return;
-
-        const gestureData = {
-            leftHand: this.leftHand,
-            rightHand: this.rightHand,
-            singlePinch: null,
-            twoHandPinch: null
-        };
-
-        if (this.leftHand && this.rightHand) {
-            const twoHandPinch = this.gestureRecognizer.detectTwoHandPinch(
-                this.leftHand,
-                this.rightHand
-            );
-
-            if (twoHandPinch.isActive) {
-                gestureData.twoHandPinch = {
-                    isActive: true,
-                    center: this.coordinateMapper.mediaPipeToWorld(twoHandPinch.center),
-                    leftPosition: this.coordinateMapper.mediaPipeToWorld(twoHandPinch.leftPosition),
-                    rightPosition: this.coordinateMapper.mediaPipeToWorld(twoHandPinch.rightPosition),
-                    separation: twoHandPinch.separation
-                };
-            }
-        }
-
-        if (this.blockSystem) {
-            this.blockSystem.update(gestureData);
-        }
-
-        if (this.leftHand) {
-            const pinch = this.gestureRecognizer.detectPinch(this.leftHand);
-            const worldPos = this.coordinateMapper.mediaPipeToWorld(pinch.position);
-            this.visualFeedback.showHandCursor('left', worldPos, { isPinched: pinch.isPinched });
-        } else {
-            this.visualFeedback.hideHandCursor('left');
-        }
-
-        if (this.rightHand) {
-            const pinch = this.gestureRecognizer.detectPinch(this.rightHand);
-            const worldPos = this.coordinateMapper.mediaPipeToWorld(pinch.position);
-            this.visualFeedback.showHandCursor('right', worldPos, { isPinched: pinch.isPinched });
-        } else {
-            this.visualFeedback.hideHandCursor('right');
-        }
-    }
-
     addTestCube() {
         const geometry = new THREE.BoxGeometry(2, 2, 2);
         const material = new THREE.MeshStandardMaterial({
@@ -392,27 +344,85 @@ export class HandCraft3DApp {
         }
     }
 
-    updateFPS(timestamp) {
-        this.frameCount++;
-        const elapsed = timestamp - this.lastFPSUpdate;
+    processHandData() {
+        if (!this.leftHand && !this.rightHand) return;
 
-        if (elapsed >= 500) {
-            this.currentFPS = Math.round((this.frameCount * 1000) / elapsed);
-            this.frameCount = 0;
-            this.lastFPSUpdate = timestamp;
+        let leftPinch = null;
+        let rightPinch = null;
 
-            const fpsCounter = document.getElementById('fps-counter');
-            if (fpsCounter) {
-                fpsCounter.textContent = this.currentFPS.toString();
-
-                if (this.currentFPS >= 50) {
-                    fpsCounter.style.color = '#00ff88';
-                } else if (this.currentFPS >= 30) {
-                    fpsCounter.style.color = '#ffaa00';
-                } else {
-                    fpsCounter.style.color = '#ff6b9d';
-                }
+        // 1. Detect Pinches & Update Visual Feedback
+        if (this.leftHand) {
+            leftPinch = this.gestureRecognizer.detectPinch(this.leftHand, 'left');
+            if (this.visualFeedback) {
+                const leftPos = this.coordinateMapper.mediaPipeToWorld(this.leftHand[8]); // Index tip
+                this.visualFeedback.showHandCursor('left', leftPos, leftPinch);
             }
+        } else if (this.visualFeedback) {
+            this.visualFeedback.hideHandCursor('left');
+        }
+
+        if (this.rightHand) {
+            rightPinch = this.gestureRecognizer.detectPinch(this.rightHand, 'right');
+            if (this.visualFeedback) {
+                const rightPos = this.coordinateMapper.mediaPipeToWorld(this.rightHand[8]); // Index tip
+                this.visualFeedback.showHandCursor('right', rightPos, rightPinch);
+            }
+        } else if (this.visualFeedback) {
+            this.visualFeedback.hideHandCursor('right');
+        }
+
+        // 2. Compute Two-Hand Gesture
+        let twoHandPinch = { isActive: false };
+        if (leftPinch && rightPinch) {
+            twoHandPinch = this.gestureRecognizer.computeTwoHandGesture(leftPinch, rightPinch);
+
+            // Convert pinch positions to world space if active
+            if (twoHandPinch.isActive) {
+                twoHandPinch.leftPosition = this.coordinateMapper.mediaPipeToWorld(twoHandPinch.leftPosition);
+                twoHandPinch.rightPosition = this.coordinateMapper.mediaPipeToWorld(twoHandPinch.rightPosition);
+                twoHandPinch.center = this.coordinateMapper.mediaPipeToWorld(twoHandPinch.center);
+            }
+        }
+
+        // 3. Route to Active Mode System
+        if (!this.modeManager) return;
+        const currentMode = this.modeManager.currentMode;
+
+        switch (currentMode) {
+            case 'CREATE':
+                if (this.blockSystem) {
+                    this.blockSystem.update({
+                        leftHand: this.leftHand,
+                        rightHand: this.rightHand,
+                        twoHandPinch: twoHandPinch
+                    });
+                }
+                break;
+
+            case 'SELECT':
+            case 'DELETE':
+                if (this.selectionSystem) {
+                    this.selectionSystem.update(this.leftHand, this.rightHand, this.gestureRecognizer, this.coordinateMapper);
+                    if (currentMode === 'DELETE') {
+                        this.selectionSystem.deleteSelected();
+                    }
+                }
+                break;
+
+            case 'MOVE':
+                if (this.selectionSystem) {
+                    this.selectionSystem.update(this.leftHand, this.rightHand, this.gestureRecognizer, this.coordinateMapper);
+                }
+                if (this.manipulationSystem) {
+                    this.manipulationSystem.update(this.leftHand, this.rightHand, this.gestureRecognizer, this.coordinateMapper);
+                }
+                break;
+
+            case 'EXTRUDE':
+                if (this.extrudeSystem) {
+                    this.extrudeSystem.update(this.leftHand, this.rightHand, this.gestureRecognizer, this.coordinateMapper);
+                }
+                break;
         }
     }
 

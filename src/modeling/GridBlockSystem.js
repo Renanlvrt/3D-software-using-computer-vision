@@ -25,11 +25,13 @@ export class GridBlockSystem {
 
         // Materials
         this.previewMaterial = new THREE.MeshStandardMaterial({
-            color: 0x00ccff,
-            transparent: true,
-            opacity: 0.5,
+            color: 0x00ff88, // Same as solid block
+            transparent: false, // Opaque for "real" feel
+            opacity: 1.0,
             roughness: 0.6,
-            metalness: 0.3
+            metalness: 0.4,
+            emissive: 0x004422, // Slight glow to indicate active creation
+            emissiveIntensity: 0.5
         });
 
         this.solidMaterial = new THREE.MeshStandardMaterial({
