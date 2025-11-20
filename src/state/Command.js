@@ -35,30 +35,33 @@ export class Command {
 }
 
 /**
- * Create Block Command
+ * Create Block Command (for Grid System)
  */
 export class CreateBlockCommand extends Command {
-    constructor(blockSystem, block) {
+    constructor(blockSystem, blocks) {
         super();
         this.blockSystem = blockSystem;
-        this.block = block;
+        this.blocks = Array.isArray(blocks) ? blocks : [blocks];
     }
 
     execute() {
-        this.blockSystem.scene.add(this.block);
-        this.blockSystem.placedBlocks.push(this.block);
+        for (const block of this.blocks) {
+            this.blockSystem.scene.add(block);
+            const key = this.blockSystem.getGridKey(block.userData.gridPosition);
+            this.blockSystem.blocks.set(key, block);
+        }
     }
 
     undo() {
-        const index = this.blockSystem.placedBlocks.indexOf(this.block);
-        if (index !== -1) {
-            this.blockSystem.placedBlocks.splice(index, 1);
+        for (const block of this.blocks) {
+            const key = this.blockSystem.getGridKey(block.userData.gridPosition);
+            this.blockSystem.blocks.delete(key);
+            this.blockSystem.scene.remove(block);
         }
-        this.blockSystem.scene.remove(this.block);
     }
 
     getDescription() {
-        return 'Create Block';
+        return `Create ${this.blocks.length} Block(s)`;
     }
 }
 

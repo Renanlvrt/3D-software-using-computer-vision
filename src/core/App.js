@@ -1,6 +1,6 @@
 /**
  * HandCraft3D Application Core
- * Main application controller that coordinates all subsystems
+ * Main application controller with Grid-based Minecraft-style building
  */
 
 import * as THREE from 'three';
@@ -11,7 +11,7 @@ import { HandTracker } from '../vision/HandTracker.js';
 import { GestureRecognizer } from '../vision/GestureRecognizer.js';
 import { CoordinateMapper } from '../vision/CoordinateMapper.js';
 import { VisualFeedback } from '../ui/VisualFeedback.js';
-import { BlockSystem } from '../modeling/BlockSystem.js';
+import { GridBlockSystem } from '../modeling/GridBlockSystem.js';
 import { SelectionSystem } from '../modeling/SelectionSystem.js';
 import { ManipulationSystem } from '../modeling/ManipulationSystem.js';
 import { ExtrudeSystem } from '../modeling/ExtrudeSystem.js';
@@ -146,7 +146,7 @@ export class HandCraft3DApp {
     }
 
     initializeModelingSystems() {
-        this.blockSystem = new BlockSystem(this.sceneManager.scene, this.eventBus);
+        this.blockSystem = new GridBlockSystem(this.sceneManager.scene, this.eventBus);
         this.selectionSystem = new SelectionSystem(
             this.sceneManager.scene,
             this.sceneManager.camera,
@@ -173,10 +173,8 @@ export class HandCraft3DApp {
 
     setupStateEventListeners() {
         this.eventBus.on('blocks-created', ({ blocks }) => {
-            for (const block of blocks) {
-                const command = new CreateBlockCommand(this.blockSystem, block);
-                this.undoManager.execute(command);
-            }
+            const command = new CreateBlockCommand(this.blockSystem, blocks);
+            this.undoManager.execute(command);
         });
 
         this.eventBus.on('objects-deleted', ({ objects }) => {
@@ -295,30 +293,22 @@ export class HandCraft3DApp {
     }
 
     initializeUI() {
-        // Mode manager
         this.modeManager = new ModeManager(this.eventBus);
         this.modeManager.setMode(this.modeManager.modes.CREATE);
 
-        // UI panels
         this.uiPanel = new UIPanel(this.eventBus);
         this.uiPanel.initialize();
 
-        // Setup UI event listeners
         this.setupUIEventListeners();
 
         console.log('✅ UI initialized');
     }
 
-    /**
-     * Setup UI-specific event listeners
-     */
     setupUIEventListeners() {
-        // Mode change requests from UI
         this.eventBus.on('mode-change-requested', ({ mode }) => {
             this.modeManager.setMode(mode);
         });
 
-        // Undo/redo from UI
         this.eventBus.on('undo-requested', () => {
             if (this.undoManager) this.undoManager.undo();
         });
@@ -327,7 +317,6 @@ export class HandCraft3DApp {
             if (this.undoManager) this.undoManager.redo();
         });
 
-        // Save/export from UI
         this.eventBus.on('save-requested', () => {
             if (this.stateSerializer) {
                 const sceneName = prompt('Enter scene name:', 'My Scene');

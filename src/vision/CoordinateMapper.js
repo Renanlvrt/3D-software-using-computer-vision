@@ -24,30 +24,36 @@ export class CoordinateMapper {
      * @returns {Object} Three.js world position
      */
     mediaPipeToWorld(landmark) {
+        // Depth-based mapping for intuitive cursor control:
+        // Hand X (left-right) → World X (left-right)
+        // Hand Y (up-down) → World Z (forward-back depth)
+        // Hand Z (MediaPipe depth) → World Y (height)
+
         return {
-            // X: Map [0,1] to workspace X bounds
+            // X: Map [0,1] to workspace X bounds (flip for natural mirroring)
             x: this.mapRange(
-                landmark.x,
+                1 - landmark.x,
                 0, 1,
                 this.bounds.x.min,
                 this.bounds.x.max
             ),
 
-            // Y: Flip axis (MediaPipe top=0, Three.js top=positive)
-            // Then map [0,1] to workspace Y bounds
+            // Y: Use MediaPipe's depth (z) for world height
+            // MediaPipe z is roughly [-0.1, 0.1] for close hand, scale to world Y
             y: this.mapRange(
-                1 - landmark.y,
-                0, 1,
+                -landmark.z * 5, // Scale and invert
+                -1, 1,
                 this.bounds.y.min,
                 this.bounds.y.max
             ),
 
-            // Z: Map [-1,1] to workspace Z bounds
+            // Z: Map hand Y to world depth (forward/back)
+            // Moving hand down on screen = moving forward in 3D space
             z: this.mapRange(
-                landmark.z,
-                -1, 1,
-                this.bounds.z.min,
-                this.bounds.z.max
+                landmark.y,
+                0, 1,
+                this.bounds.z.max,  // Inverted: top of screen = far
+                this.bounds.z.min   // bottom of screen = close
             )
         };
     }
