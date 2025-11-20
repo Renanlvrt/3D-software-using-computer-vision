@@ -1,0 +1,31 @@
+{
+  "name": "handcraft3d",
+  "version": "1.0.0",
+  "description": "Browser-based 3D modeling application controlled through computer vision hand tracking",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "3d",
+    "modeling",
+    "computer-vision",
+    "hand-tracking",
+    "mediapipe",
+    "threejs",
+    "gesture-control"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.160.0",
+    "@mediapipe/hands": "^0.4.1646424915",
+    "@mediapipe/camera_utils": "^0.3.1620248357",
+    "@mediapipe/drawing_utils": "^0.3.1620248257"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}

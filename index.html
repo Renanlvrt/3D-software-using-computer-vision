@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="HandCraft3D - Gesture-controlled 3D modeling application using computer vision">
+    <title>HandCraft3D - Gesture-Controlled 3D Modeling</title>
+    <link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+    <!-- Hidden Video Input for Camera -->
+    <video id="input-video" autoplay playsinline style="display:none"></video>
+    
+    <!-- Hand Tracking Visualization Canvas -->
+    <div id="camera-container">
+        <canvas id="output-canvas"></canvas>
+        <div id="camera-status">
+            <span class="status-dot"></span>
+            <span class="status-text">Initializing...</span>
+        </div>
+    </div>
+    
+    <!-- 3D Canvas Container -->
+    <div id="canvas-container"></div>
+    
+    <!-- UI Overlay -->
+    <div id="ui-overlay">
+        <div id="mode-indicator">
+            <span class="mode-icon">✋</span>
+            <span class="mode-text">CREATE MODE</span>
+        </div>
+        
+        <div id="tool-panel">
+            <div class="tool-section">
+                <h3>Gestures</h3>
+                <div class="gesture-list">
+                    <div class="gesture-item">
+                        <span class="gesture-icon">👌</span>
+                        <span>Two-Hand Pinch: Create Block</span>
+                    </div>
+                    <div class="gesture-item">
+                        <span class="gesture-icon">👆</span>
+                        <span>Single Pinch: Select/Move</span>
+                    </div>
+                    <div class="gesture-item">
+                        <span class="gesture-icon">✋</span>
+                        <span>Palm Open: Switch Mode</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="stats-panel">
+            <div class="stat-item">
+                <span class="stat-label">FPS:</span>
+                <span class="stat-value" id="fps-counter">--</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Objects:</span>
+                <span class="stat-value" id="object-count">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Hands:</span>
+                <span class="stat-value" id="hand-count">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <h1 class="app-title">HandCraft3D</h1>
+            <p class="app-subtitle">Gesture-Controlled 3D Modeling</p>
+            <div class="spinner"></div>
+            <p class="loading-text">Initializing hand tracking...</p>
+            <div class="loading-steps">
+                <div class="step" id="step-camera">
+                    <span class="step-icon">📷</span>
+                    <span class="step-text">Camera access</span>
+                </div>
+                <div class="step" id="step-mediapipe">
+                    <span class="step-icon">🤖</span>
+                    <span class="step-text">MediaPipe loading</span>
+                </div>
+                <div class="step" id="step-scene">
+                    <span class="step-icon">🎨</span>
+                    <span class="step-text">3D scene setup</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Error Screen (Hidden by default) -->
+    <div id="error-screen" style="display: none;">
+        <div class="error-content">
+            <h1>⚠️ Initialization Error</h1>
+            <p id="error-message"></p>
+            <div class="error-help">
+                <h3>Please ensure:</h3>
+                <ul>
+                    <li>Camera permission is granted</li>
+                    <li>Browser supports WebGL 2.0</li>
+                    <li>Using HTTPS or localhost</li>
+                    <li>Camera is not in use by another application</li>
+                </ul>
+            </div>
+            <button id="retry-button" onclick="location.reload()">🔄 Retry</button>
+        </div>
+    </div>
+    
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
