@@ -11,7 +11,7 @@ export class GridBlockSystem {
         this.eventBus = eventBus;
 
         // Grid configuration
-        this.gridSize = 1.0; // 1 unit per block
+        this.gridSize = 3.0; // 3 units per block (larger for better control)
         this.maxBlocks = 1000; // Limit total blocks
 
         // Block storage with 3D grid key
@@ -38,7 +38,7 @@ export class GridBlockSystem {
             metalness: 0.4
         });
 
-        // Block geometry (reused for performance)
+        // Block geometry (reused for performance) - 3x3x3 units
         this.blockGeometry = new THREE.BoxGeometry(this.gridSize, this.gridSize, this.gridSize);
 
         console.log('✅ GridBlockSystem initialized');

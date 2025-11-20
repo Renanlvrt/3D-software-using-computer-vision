@@ -15,9 +15,9 @@
 import * as THREE from 'three';
 
 export class VoxelGridSystem {
-    constructor(voxelSize = 1.0) {
+    constructor(voxelSize = 3.0) {
         // Grid configuration
-        this.voxelSize = voxelSize;  // Size of one grid cell (typically 1.0)
+        this.voxelSize = voxelSize;  // Size of one grid cell (3.0 for better control)
         this.gridOrigin = { x: 0, y: 0, z: 0 };  // World-space grid origin
         this.showGrid = true;  // Whether to display visual grid
 
